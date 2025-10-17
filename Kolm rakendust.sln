@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36414.22 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kolm rakendust", "Kolm rakendust.csproj", "{56FF81D6-615C-47BE-85FC-16EA9175FD54}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{56FF81D6-615C-47BE-85FC-16EA9175FD54}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{56FF81D6-615C-47BE-85FC-16EA9175FD54}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{56FF81D6-615C-47BE-85FC-16EA9175FD54}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{56FF81D6-615C-47BE-85FC-16EA9175FD54}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {AC2F217E-7951-4062-8B09-F088BB2FC4E9}
+	EndGlobalSection
+EndGlobal
