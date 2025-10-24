@@ -59,15 +59,18 @@ namespace Kolm_rakendust
             if (e.Node.Text == "Pildi vaatamise programm")
             {
                 pildiVaataja.Show();
+
             }
             else if (e.Node.Text == "Matemaatiline äraarvamismäng")
             {
                 numbrimang = new Numbrimang(this);
+                pildiVaataja.Hide();
 
             }
             else if (e.Node.Text == "Sarnaste piltide leidmise mäng")
             {
                 mathGame = new MatemaatilineArarvamisMang(this);
+                pildiVaataja.Hide();
             }
         }
 
