@@ -11,10 +11,12 @@ namespace Kolm_rakendust
         Label lbl;
         private pildiVaatamise pildiVaataja;
         private MatemaatilineArarvamisMang mathGame;
-        private Numbrimang numbrimang;
+        private MathQuiz mathQuiz;
 
         public Form1()
         {
+            mathQuiz = new MathQuiz(this);
+            mathQuiz.Hide();
             InitializeComponent();
             this.Height = 800;
             this.Width = 1000;
@@ -51,6 +53,7 @@ namespace Kolm_rakendust
 
             pildiVaataja = new pildiVaatamise(this);
             pildiVaataja.Hide();
+
         }
 
         private void Tree_AfterSelect(object sender, TreeViewEventArgs e)
@@ -59,11 +62,12 @@ namespace Kolm_rakendust
             if (e.Node.Text == "Pildi vaatamise programm")
             {
                 pildiVaataja.Show();
+                mathQuiz.Hide();
 
             }
             else if (e.Node.Text == "Matemaatiline äraarvamismäng")
             {
-                numbrimang = new Numbrimang(this);
+                mathQuiz.Show();
                 pildiVaataja.Hide();
 
             }
@@ -71,6 +75,7 @@ namespace Kolm_rakendust
             {
                 mathGame = new MatemaatilineArarvamisMang(this);
                 pildiVaataja.Hide();
+                mathQuiz.Hide();
             }
         }
 
