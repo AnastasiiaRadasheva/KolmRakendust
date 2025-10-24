@@ -82,8 +82,13 @@ namespace Kolm_rakendust
 
         private void Label_Click(object sender, EventArgs e)
         {
-            var clickedLabel = sender as Label;
+            // Если таймер сейчас работает (ожидание скрытия), игнорируем дополнительные клики
+            if (timer != null && timer.Enabled)
+                return;
 
+            var clickedLabel = sender as Label;
+            if (clickedLabel == null)
+                return;
 
             if (clickedLabel.Text != "?")
                 return;
@@ -123,8 +128,11 @@ namespace Kolm_rakendust
         {
             timer.Stop();
 
-            firstClicked.Text = "?";
-            secondClicked.Text = "?";
+            if (firstClicked != null)
+                firstClicked.Text = "?";
+            if (secondClicked != null)
+                secondClicked.Text = "?";
+
             ResetClickedLabels();
         }
 
