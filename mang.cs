@@ -320,8 +320,7 @@ namespace Kolm_rakendust
                 form.Controls.Remove(level3Btn);
                 level3Btn = null;
             }
-
-            // Lõpeta mänguolek
+            //vajalik mängu sulgemiseks
             gameActive = false;
         }
     }

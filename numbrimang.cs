@@ -36,7 +36,7 @@ namespace Kolm_rakendust
             submitButton.Location = new Point(280, 10);
             submitButton.Size = new Size(120, 30);
             submitButton.Click += SubmitButton_Click;
-            submitButton.Enabled = false;  // Esialgu keelatud
+            submitButton.Enabled = false;  
 
             endQuizButton = new Button();
             endQuizButton.Text = "Lõpeta test";
@@ -107,19 +107,16 @@ namespace Kolm_rakendust
 
         private void EndQuizButton_Click(object sender, EventArgs e)
         {
-            // Tühjendame kõik vastused
+
             numAnswer1.Value = 0;
             numAnswer2.Value = 0;
             numAnswer3.Value = 0;
             numAnswer4.Value = 0;
 
-            // Taastame aja algväärtuse
             timeLeft = 30;
-            lblTimeLeft.Text = $"Aeg: {timeLeft} sek.";  // Aja kuvamine värskendatud
+            lblTimeLeft.Text = $"Aeg: {timeLeft} sek."; 
             lblResult.Text = " ";
 
-
-            // Taastame nuppude olekud (start nupp aktiivseks, submit nupp mitteaktiivseks)
             startButton.Enabled = true;
             submitButton.Enabled = false;
             endQuizButton.Enabled = false;
@@ -127,7 +124,6 @@ namespace Kolm_rakendust
 
 
 
-        // Aja loenduri täiendamine
         private void Timer_Tick(object sender, EventArgs e)
         {
             if (timeLeft > 0)
@@ -138,11 +134,10 @@ namespace Kolm_rakendust
             else
             {
                 timer.Stop();
-                SubmitButton_Click(sender, e); // Kui aeg otsa saab, esita vastused automaatselt
+                SubmitButton_Click(sender, e); 
             }
         }
 
-        // Kuvab viktoriini
         public void Show()
         {
             startButton.Visible = true;
@@ -160,7 +155,8 @@ namespace Kolm_rakendust
             lblResult.Visible = true;
         }
 
-        // Peidab viktoriini
+
+
         public void Hide()
         {
             startButton.Visible = false;
