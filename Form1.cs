@@ -11,12 +11,25 @@ namespace Kolm_rakendust
         Label lbl;
         private pildiVaatamise pildiVaataja;
         private MatemaatilineArarvamisMang mathGame;
+
         private MathQuiz mathQuiz;
 
         public Form1()
         {
+            InitializeComponent();
+
             mathQuiz = new MathQuiz(this);
             mathQuiz.Hide();
+
+            mathGame = new MatemaatilineArarvamisMang(this);
+            mathGame.Hide();
+
+            pildiVaataja = new pildiVaatamise(this);
+            pildiVaataja.Hide();
+
+            mathQuiz = new MathQuiz(this);
+            mathQuiz.Hide();
+
             InitializeComponent();
             this.Height = 800;
             this.Width = 1000;
@@ -34,8 +47,8 @@ namespace Kolm_rakendust
 
             btn = new Button();
             btn.Text = "Vajuta siia";
-            btn.Location = new Point(150, 30);
-            btn.Height = 30;
+            btn.Location = new Point(150, 80);
+            btn.Height = 80;
             btn.Width = 100;
 
             lbl = new Label();
@@ -63,12 +76,14 @@ namespace Kolm_rakendust
             {
                 pildiVaataja.Show();
                 mathQuiz.Hide();
+                mathGame.Hide();
 
             }
             else if (e.Node.Text == "Matemaatiline äraarvamismäng")
             {
                 mathQuiz.Show();
                 pildiVaataja.Hide();
+                mathGame.Hide();
 
             }
             else if (e.Node.Text == "Sarnaste piltide leidmise mäng")
@@ -76,6 +91,7 @@ namespace Kolm_rakendust
                 mathGame = new MatemaatilineArarvamisMang(this);
                 pildiVaataja.Hide();
                 mathQuiz.Hide();
+                
             }
         }
 

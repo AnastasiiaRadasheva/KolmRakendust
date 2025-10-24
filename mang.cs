@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Taskbar;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
 namespace Kolm_rakendust
 {
@@ -111,21 +113,20 @@ namespace Kolm_rakendust
             switch (level)
             {
                 case 1:
-                    pairs = 9; // 8 kaarti
+                    pairs = 5; 
                     timeLeftSeconds = 30;
                     break;
                 case 2:
-                    pairs = 12; // 12 kaarti
+                    pairs = 10; 
                     timeLeftSeconds = 50;
                     break;
                 case 3:
                 default:
-                    pairs = 15; // 16 kaarti
+                    pairs = 15; 
                     timeLeftSeconds = 50;
                     break;
             }
 
-            // kaardid
             var list = new List<string>();
             for (int i = 1; i <= pairs; i++)
             {
@@ -139,10 +140,10 @@ namespace Kolm_rakendust
             labels = new Label[totalCards];
 
             int startX = 150;
-            int startY = 70; // kaardid algavad siit
+            int startY = 70; 
             int x = startX;
             int y = startY;
-            int columns = 5; // veerud
+            int columns = 5; 
             int spacing = 110;
 
             for (int i = 0; i < labels.Length; i++)
@@ -254,7 +255,6 @@ namespace Kolm_rakendust
             {
                 gameTimer.Stop();
                 gameActive = false;
-                // mäng läbi
                 MessageBox.Show("Aeg on otsas!");
             }
         }
@@ -270,6 +270,59 @@ namespace Kolm_rakendust
         {
             firstClicked = null;
             secondClicked = null;
+        }
+        public void Hide()
+        {
+            try
+            {
+                gameTimer?.Stop();
+                flipTimer?.Stop();
+            }
+            catch { }
+
+            if (labels != null)
+            {
+                foreach (var l in labels)
+                {
+                    if (l != null && form.Controls.Contains(l))
+                    {
+                        l.Visible = false;
+                        form.Controls.Remove(l);
+                    }
+                }
+                labels = null;
+            }
+
+            if (timeLabel != null && form.Controls.Contains(timeLabel))
+            {
+                timeLabel.Visible = false;
+                form.Controls.Remove(timeLabel);
+                timeLabel = null;
+            }
+
+            if (level1Btn != null && form.Controls.Contains(level1Btn))
+            {
+                level1Btn.Visible = false;
+                form.Controls.Remove(level1Btn);
+                level1Btn = null;
+            }
+
+            if (level2Btn != null && form.Controls.Contains(level2Btn))
+            {
+                level2Btn.Visible = false;
+                form.Controls.Remove(level2Btn);
+                level2Btn = null;
+            }
+
+            if (level3Btn != null && form.Controls.Contains(level3Btn))
+            {
+                level3Btn.Visible = false;
+                form.Controls.Remove(level3Btn);
+                level3Btn = null;
+            }
+
+            // Lõpeta mänguolek
+            gameActive = false;
         }
     }
 }
