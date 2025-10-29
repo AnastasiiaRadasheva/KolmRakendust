@@ -6,115 +6,159 @@ namespace Kolm_rakendust
 {
     public class pildiVaatamise
     {
-        private Button showButton;
-        private Button clearButton;
-        private Button backgroundButton;
-        private Button closeButton;
-        private CheckBox stretchCheckBox;
-        private PictureBox pictureBox;
-        private OpenFileDialog openFileDialog;
-        private ColorDialog colorDialog;
-        private Button saveButton;
-        private SaveFileDialog saveFileDialog;
-        private Button grayscaleButton;
-        private Button infoButton;
+        Button btnShow, btnClear, btnBackground, btnClose, btnSave, btnGray, btnInfo;
+        CheckBox chStretch;
+        PictureBox pic;
+        OpenFileDialog openFile;
+        SaveFileDialog saveFile;
+        ColorDialog colorDialog;
 
         public pildiVaatamise(Form parent)
         {
-            openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "Image Files|*.bmp;*.jpg;*.jpeg;*.png;*.gif|All files|*.*";
+            openFile = new OpenFileDialog();
+            openFile.Filter = "Image Files|*.bmp;*.jpg;*.jpeg;*.png;*.gif|All files|*.*";
+
+            saveFile = new SaveFileDialog();
+            saveFile.Filter = "PNG Image|*.png|JPEG Image|*.jpg;*.jpeg|Bitmap|*.bmp";
 
             colorDialog = new ColorDialog();
 
-            saveFileDialog = new SaveFileDialog();
-            saveFileDialog.Filter = "PNG Image|*.png|JPEG Image|*.jpg;*.jpeg|Bitmap|*.bmp";
+            pic = new PictureBox();
+            pic.Location = new Point(150, 50);
+            pic.Size = new Size(560, 450);
+            pic.BorderStyle = BorderStyle.Fixed3D;
+            pic.SizeMode = PictureBoxSizeMode.Normal;
 
-            pictureBox = new PictureBox
+            btnShow = new Button()
             {
-                Location = new Point(150, 50),
-                Size = new Size(560, 450),
-                BorderStyle = BorderStyle.Fixed3D,
-                SizeMode = PictureBoxSizeMode.Normal
+                Text = "Vali pilt...",
+                Location = new Point(150, 10),
+                Size = new Size(100, 30)
             };
+            btnShow.Click += BtnShow_Click;
 
-            showButton = new Button { Text = "Vali pilt...", Location = new Point(150, 10), Size = new Size(100, 30) };
-            clearButton = new Button { Text = "Tühjenda pilt", Location = new Point(260, 10), Size = new Size(100, 30) };
-            backgroundButton = new Button { Text = "Muuda taustavärvi", Location = new Point(370, 10), Size = new Size(120, 30) };
-            closeButton = new Button { Text = "Sulge", Location = new Point(500, 10), Size = new Size(100, 30) };
-            stretchCheckBox = new CheckBox { Text = "Rasta pilt", Location = new Point(610, 15), Size = new Size(100, 20) };
-            saveButton = new Button { Text = "Salvesta pilt", Location = new Point(710, 10), Size = new Size(100, 30) };
-            grayscaleButton = new Button { Text = "Grayscale", Location = new Point(800, 10), Size = new Size(100, 30) };
-            infoButton = new Button { Text = "Info", Location = new Point(900, 10), Size = new Size(60, 30) };
+            btnClear = new Button()
+            {
+                Text = "Tühjenda pilt",
+                Location = new Point(260, 10),
+                Size = new Size(100, 30)
+            };
+            btnClear.Click += BtnClear_Click;
 
-            showButton.Click += ShowButton_Click;
-            clearButton.Click += ClearButton_Click;
-            backgroundButton.Click += BackgroundButton_Click;
-            closeButton.Click += CloseButton_Click;
-            stretchCheckBox.CheckedChanged += StretchCheckBox_CheckedChanged;
-            saveButton.Click += SaveButton_Click;
-            grayscaleButton.Click += (s, e) => ApplyGrayscale();
-            infoButton.Click += (s, e) => ShowImageInfo();
+            btnBackground = new Button()
+            {
+                Text = "Muuda taustavärvi",
+                Location = new Point(370, 10),
+                Size = new Size(120, 30)
+            };
+            btnBackground.Click += BtnBackground_Click;
 
+            btnClose = new Button()
+            {
+                Text = "Sulge",
+                Location = new Point(500, 10),
+                Size = new Size(100, 30)
+            };
+            btnClose.Click += BtnClose_Click;
 
-            parent.Controls.Add(showButton);
-            parent.Controls.Add(clearButton);
-            parent.Controls.Add(backgroundButton);
-            parent.Controls.Add(closeButton);
-            parent.Controls.Add(stretchCheckBox);
-            parent.Controls.Add(saveButton);
-            parent.Controls.Add(grayscaleButton);
-            parent.Controls.Add(infoButton);
-            parent.Controls.Add(pictureBox);
+            btnSave = new Button()
+            {
+                Text = "Salvesta pilt",
+                Location = new Point(710, 10),
+                Size = new Size(100, 30)
+            };
+            btnSave.Click += BtnSave_Click;
+
+            btnGray = new Button()
+            {
+                Text = "Grayscale",
+                Location = new Point(820, 10),
+                Size = new Size(100, 30)
+            };
+            btnGray.Click += (s, e) => ApplyGrayscale();
+
+            btnInfo = new Button()
+            {
+                Text = "Info",
+                Location = new Point(930, 10),
+                Size = new Size(60, 30)
+            };
+            btnInfo.Click += (s, e) => ShowImageInfo();
+
+            // --- МАРКЕРНАЯ ГАЛОЧКА (Stretch) ---
+            chStretch = new CheckBox()
+            {
+                Text = "Rasta pilt",
+                Location = new Point(610, 15),
+                AutoSize = true
+            };
+            chStretch.CheckedChanged += ChStretch_CheckedChanged;
+
+            // --- ДОБАВЛЕНИЕ НА ФОРМУ ---
+            parent.Controls.Add(pic);
+            parent.Controls.Add(btnShow);
+            parent.Controls.Add(btnClear);
+            parent.Controls.Add(btnBackground);
+            parent.Controls.Add(btnClose);
+            parent.Controls.Add(chStretch);
+            parent.Controls.Add(btnSave);
+            parent.Controls.Add(btnGray);
+            parent.Controls.Add(btnInfo);
         }
 
-        private void ShowButton_Click(object sender, EventArgs e)
+        // --- СОБЫТИЯ ---
+        private void BtnShow_Click(object sender, EventArgs e)
         {
-            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            if (openFile.ShowDialog() == DialogResult.OK)
             {
-                pictureBox.Load(openFileDialog.FileName);
+                pic.Load(openFile.FileName);
             }
         }
 
-        private void ClearButton_Click(object sender, EventArgs e)
+        private void BtnClear_Click(object sender, EventArgs e)
         {
-            pictureBox.Image = null;
+            pic.Image = null;
         }
 
-        private void BackgroundButton_Click(object sender, EventArgs e)
+        private void BtnBackground_Click(object sender, EventArgs e)
         {
             if (colorDialog.ShowDialog() == DialogResult.OK)
             {
-                pictureBox.BackColor = colorDialog.Color;
+                pic.BackColor = colorDialog.Color;
             }
         }
 
-        private void CloseButton_Click(object sender, EventArgs e)
+        private void BtnClose_Click(object sender, EventArgs e)
         {
-            if (pictureBox.FindForm() is Form form)
+            if (pic.FindForm() is Form form)
             {
                 form.Close();
             }
         }
 
-        private void StretchCheckBox_CheckedChanged(object sender, EventArgs e)
+        private void ChStretch_CheckedChanged(object sender, EventArgs e)
         {
-            pictureBox.SizeMode = stretchCheckBox.Checked ? PictureBoxSizeMode.StretchImage : PictureBoxSizeMode.Normal;
+            pic.SizeMode = chStretch.Checked
+                ? PictureBoxSizeMode.StretchImage
+                : PictureBoxSizeMode.Normal;
         }
 
-        private void SaveButton_Click(object sender, EventArgs e)
+        private void BtnSave_Click(object sender, EventArgs e)
         {
-            if (pictureBox.Image == null) return;
-            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+            if (pic.Image == null) return;
+
+            if (saveFile.ShowDialog() == DialogResult.OK)
             {
-                pictureBox.Image.Save(saveFileDialog.FileName);
+                pic.Image.Save(saveFile.FileName);
             }
         }
 
+        // --- ДОП. ФУНКЦИИ ---
         public void ApplyGrayscale()
         {
-            if (pictureBox.Image == null) return;
+            if (pic.Image == null) return;
 
-            Bitmap bmp = new Bitmap(pictureBox.Image);
+            Bitmap bmp = new Bitmap(pic.Image);
             for (int y = 0; y < bmp.Height; y++)
             {
                 for (int x = 0; x < bmp.Width; x++)
@@ -124,42 +168,42 @@ namespace Kolm_rakendust
                     bmp.SetPixel(x, y, Color.FromArgb(gray, gray, gray));
                 }
             }
-            pictureBox.Image = bmp;
+            pic.Image = bmp;
         }
 
         public void ShowImageInfo()
         {
-            if (pictureBox.Image == null) return;
+            if (pic.Image == null) return;
 
-            Bitmap bmp = (Bitmap)pictureBox.Image;
-            string info = $"Размер: {bmp.Width} x {bmp.Height}\nФормат пикселя: {bmp.PixelFormat}";
-            MessageBox.Show(info, "Информация о картинке");
+            Bitmap bmp = (Bitmap)pic.Image;
+            string info = $"Suurus: {bmp.Width} x {bmp.Height}\nFormaat: {bmp.PixelFormat}";
+            MessageBox.Show(info, "Informatsioon");
         }
 
         public void Show()
         {
-            showButton.Visible = true;
-            clearButton.Visible = true;
-            backgroundButton.Visible = true;
-            closeButton.Visible = true;
-            stretchCheckBox.Visible = true;
-            pictureBox.Visible = true;
-            saveButton.Visible = true;
-            grayscaleButton.Visible = true;
-            infoButton.Visible = true;
+            btnShow.Visible = true;
+            btnClear.Visible = true;
+            btnBackground.Visible = true;
+            btnClose.Visible = true;
+            chStretch.Visible = true;
+            btnSave.Visible = true;
+            btnGray.Visible = true;
+            btnInfo.Visible = true;
+            pic.Visible = true;
         }
 
         public void Hide()
         {
-            showButton.Visible = false;
-            clearButton.Visible = false;
-            backgroundButton.Visible = false;
-            closeButton.Visible = false;
-            stretchCheckBox.Visible = false;
-            pictureBox.Visible = false;
-            saveButton.Visible = false;
-            grayscaleButton.Visible = false;
-            infoButton.Visible = false;
+            btnShow.Visible = false;
+            btnClear.Visible = false;
+            btnBackground.Visible = false;
+            btnClose.Visible = false;
+            chStretch.Visible = false;
+            btnSave.Visible = false;
+            btnGray.Visible = false;
+            btnInfo.Visible = false;
+            pic.Visible = false;
         }
     }
 }

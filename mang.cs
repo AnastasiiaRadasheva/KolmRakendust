@@ -1,103 +1,93 @@
-﻿using System;
+﻿using Microsoft.VisualBasic;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
+using System.Linq;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Taskbar;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
 namespace Kolm_rakendust
 {
-    public class MatemaatilineArarvamisMang
+    public class MatemaatilineArarvamisMangForm
     {
+        private Form form;
+        private Label timeLabel;
+        private Button level1Btn, level2Btn, level3Btn, showScoresBtn;
         private Label[] labels;
         private string[] icons;
-        private Label firstClicked = null;
-        private Label secondClicked = null;
+        private Label firstClicked, secondClicked;
         private Random random = new Random();
-        private System.Windows.Forms.Timer flipTimer;
-        private System.Windows.Forms.Timer gameTimer;
-        private int matchedPairs = 0;
-        private Form form;
-        private int points = 0;
-        private Label timeLabel;
-        private Button level1Btn;
-        private Button level2Btn;
-        private Button level3Btn;
-        private Button showScoresBtn;
+        private System.Windows.Forms.Timer flipTimer, gameTimer;
+        private int matchedPairs;
+        private int points;
         private int timeLeftSeconds;
-        private bool gameActive = false;
-
+        private bool gameActive;
         private const string ScoresFile = "scores.txt";
 
-        public MatemaatilineArarvamisMang(Form form)
+        public MatemaatilineArarvamisMangForm(Form form)
         {
             this.form = form ?? throw new ArgumentNullException(nameof(form));
-            InitializeGame();
+            InitializeComponents();
         }
 
-        private void InitializeGame()
+        private void InitializeComponents()
         {
             form.Text = "Matemaatiline mäng";
 
+            // Время
             timeLabel = new Label
             {
-                Width = 200,
-                Height = 30,
                 Text = "Aeg: 00:00",
                 Font = new Font("Arial", 12, FontStyle.Bold),
-                Location = new Point(150, 20)
+                Location = new Point(150, 20),
+                Width = 200,
+                Height = 30
             };
             form.Controls.Add(timeLabel);
 
-            level1Btn = new Button { Text = "Tase 1", Location = new Point(370, 20), Width = 80 };
-            level1Btn.Click += (s, e) => StartLevel(1);
-            form.Controls.Add(level1Btn);
+            // Кнопки уровней
+            level1Btn = CreateLevelButton("Tase 1", 370, Level1_Click);
+            level2Btn = CreateLevelButton("Tase 2", 460, Level2_Click);
+            level3Btn = CreateLevelButton("Tase 3", 550, Level3_Click);
 
-            level2Btn = new Button { Text = "Tase 2", Location = new Point(460, 20), Width = 80 };
-            level2Btn.Click += (s, e) => StartLevel(2);
-            form.Controls.Add(level2Btn);
-
-            level3Btn = new Button { Text = "Tase 3", Location = new Point(550, 20), Width = 80 };
-            level3Btn.Click += (s, e) => StartLevel(3);
-            form.Controls.Add(level3Btn);
-
+            // Таймеры
             flipTimer = new System.Windows.Forms.Timer { Interval = 750 };
             flipTimer.Tick += FlipTimer_Tick;
 
             gameTimer = new System.Windows.Forms.Timer { Interval = 1000 };
             gameTimer.Tick += GameTimer_Tick;
+
+            // Кнопка просмотра результатов
+            showScoresBtn = new Button
+            {
+                Text = "Vaata tulemusi",
+                Location = new Point(650, 20),
+                Width = 120
+            };
+            showScoresBtn.Click += ShowScoresBtn_Click;
+            form.Controls.Add(showScoresBtn);
         }
+
+        private Button CreateLevelButton(string text, int x, EventHandler clickHandler)
+        {
+            var btn = new Button
+            {
+                Text = text,
+                Location = new Point(x, 20),
+                Width = 80
+            };
+            btn.Click += clickHandler;
+            form.Controls.Add(btn);
+            return btn;
+        }
+
+        private void Level1_Click(object sender, EventArgs e) => StartLevel(1);
+        private void Level2_Click(object sender, EventArgs e) => StartLevel(2);
+        private void Level3_Click(object sender, EventArgs e) => StartLevel(3);
 
         private void StartLevel(int level)
         {
-            // удалить старые карточки
-            if (labels != null)
-            {
-                foreach (var l in labels)
-                    if (l != null && form.Controls.Contains(l))
-                        form.Controls.Remove(l);
-            }
-
-            // создать кнопку "Vaata tulemusi" вместе с остальными (если ещё нет)
-            if (showScoresBtn == null)
-            {
-                showScoresBtn = new Button
-                {
-                    Text = "Vaata tulemusi",
-                    Location = new Point(650, 20),
-                    Width = 120
-                };
-                // <- подключаем обработчик с правильной сигнатурой
-                showScoresBtn.Click += ShowScores;
-                form.Controls.Add(showScoresBtn);
-            }
-            else
-            {
-                // если кнопка уже создана — просто показать её
-                if (!form.Controls.Contains(showScoresBtn))
-                    form.Controls.Add(showScoresBtn);
-                showScoresBtn.Visible = true;
-            }
+            ClearOldLabels();
 
             firstClicked = null;
             secondClicked = null;
@@ -105,15 +95,42 @@ namespace Kolm_rakendust
             points = 0;
             gameActive = true;
 
-            int pairs;
-            switch (level)
+            int pairs = level switch
             {
-                case 1: pairs = 5; timeLeftSeconds = 30; break;
-                case 2: pairs = 10; timeLeftSeconds = 50; break;
-                case 3:
-                default: pairs = 15; timeLeftSeconds = 60; break;
-            }
+                1 => 5,
+                2 => 10,
+                3 => 15,
+                _ => 5
+            };
 
+            timeLeftSeconds = level switch
+            {
+                1 => 30,
+                2 => 50,
+                3 => 60,
+                _ => 30
+            };
+
+            CreateIcons(pairs);
+            ShuffleIcons();
+            CreateCardLabels(pairs * 2);
+
+            UpdateTimeLabel();
+            gameTimer.Start();
+        }
+
+        private void ClearOldLabels()
+        {
+            if (labels != null)
+            {
+                foreach (var lbl in labels)
+                    if (lbl != null && form.Controls.Contains(lbl))
+                        form.Controls.Remove(lbl);
+            }
+        }
+
+        private void CreateIcons(int pairs)
+        {
             var list = new List<string>();
             for (int i = 1; i <= pairs; i++)
             {
@@ -121,13 +138,24 @@ namespace Kolm_rakendust
                 list.Add(i.ToString());
             }
             icons = list.ToArray();
-            ShuffleIcons();
+        }
 
-            int totalCards = pairs * 2;
+        private void ShuffleIcons()
+        {
+            for (int i = 0; i < icons.Length; i++)
+            {
+                int j = random.Next(icons.Length);
+                var tmp = icons[i];
+                icons[i] = icons[j];
+                icons[j] = tmp;
+            }
+        }
+
+        private void CreateCardLabels(int totalCards)
+        {
             labels = new Label[totalCards];
-
-            int startX = 150, startY = 70, x = startX, y = startY;
-            int columns = 5, spacing = 110;
+            int startX = 150, startY = 70, spacing = 110, columns = 5;
+            int x = startX, y = startY;
 
             for (int i = 0; i < labels.Length; i++)
             {
@@ -142,8 +170,7 @@ namespace Kolm_rakendust
                     BorderStyle = BorderStyle.FixedSingle,
                     Location = new Point(x, y)
                 };
-
-                labels[i].Click += Label_Click;
+                labels[i].Click += CardLabel_Click;
                 form.Controls.Add(labels[i]);
 
                 x += spacing;
@@ -153,32 +180,16 @@ namespace Kolm_rakendust
                     y += spacing;
                 }
             }
-
-            UpdateTimeLabel();
-            gameTimer.Start();
         }
 
-        private void ShuffleIcons()
+        private void CardLabel_Click(object sender, EventArgs e)
         {
-            for (int i = 0; i < icons.Length; i++)
-            {
-                int j = random.Next(icons.Length);
-                var tmp = icons[i];
-                icons[i] = icons[j];
-                icons[j] = tmp;
-            }
-        }
-
-        private void Label_Click(object sender, EventArgs e)
-        {
-            if (!gameActive || (flipTimer != null && flipTimer.Enabled)) return;
+            if (!gameActive || flipTimer.Enabled) return;
 
             var clickedLabel = sender as Label;
             if (clickedLabel == null || clickedLabel.Text != "?") return;
 
             int index = Array.IndexOf(labels, clickedLabel);
-            if (index < 0 || index >= icons.Length) return;
-
             clickedLabel.Text = icons[index];
 
             if (firstClicked == null)
@@ -201,7 +212,6 @@ namespace Kolm_rakendust
                 {
                     gameTimer.Stop();
                     gameActive = false;
-
                     string player = PromptForName();
                     SaveScore(player, points);
                     MessageBox.Show($"Võit! Punktid: {points}");
@@ -248,8 +258,7 @@ namespace Kolm_rakendust
 
         private string PromptForName()
         {
-            // нужно добавить ссылку на Microsoft.VisualBasic в проекте, либо сделать своё окно ввода
-            string name = Microsoft.VisualBasic.Interaction.InputBox("Sisesta oma nimi:", "Mängija nimi", "Mängija");
+            string name = Interaction.InputBox("Sisesta oma nimi:", "Mängija nimi", "Mängija");
             return string.IsNullOrWhiteSpace(name) ? "Tundmatu" : name;
         }
 
@@ -266,41 +275,24 @@ namespace Kolm_rakendust
             }
         }
 
-        // Обработчик события Click — сигнатура должна быть (object, EventArgs)
-        private void ShowScores(object sender, EventArgs e)
+        private void ShowScoresBtn_Click(object sender, EventArgs e)
         {
             ShowScoresInternal();
         }
 
-        // Вынесенная логика отображения результатов (можно вызывать откуда угодно)
         private void ShowScoresInternal()
         {
-            if (!File.Exists(ScoresFile))
+            string[] lines = File.ReadAllLines(ScoresFile);
+
+            string msg = "Tulemused:\n\n";
+
+            for (int i = 0; i < lines.Length; i++)
             {
-                MessageBox.Show("Pole veel tulemusi!", "Tulemused");
-                return;
+                string[] parts = lines[i].Split(';');
+                msg += parts[1].PadRight(15) + " " + parts[2].PadLeft(5) + " punkti (" + parts[0] + ")\n";
             }
 
-            try
-            {
-                var lines = File.ReadAllLines(ScoresFile);
-                var results = lines.Select(l => l.Split(';'))
-                                   .Where(a => a.Length >= 3)
-                                   .Select(a => new { Aeg = a[0], Nimi = a[1], Punktid = a[2] })
-                                   .ToList();
-
-                string msg = "Tulemused:\n\n";
-                foreach (var r in results.OrderByDescending(r => int.Parse(r.Punktid)))
-                {
-                    msg += $"{r.Nimi,-15} {r.Punktid,5} punkti ({r.Aeg})\n";
-                }
-
-                MessageBox.Show(msg, "Mängu tulemused");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Viga tulemusi lugedes: " + ex.Message);
-            }
+            MessageBox.Show(msg, "Mängu tulemused");
         }
 
 
@@ -322,9 +314,7 @@ namespace Kolm_rakendust
             form.Controls.Remove(level3Btn);
             form.Controls.Remove(showScoresBtn);
 
-            // Сбросить флаги
             gameActive = false;
         }
-
     }
 }

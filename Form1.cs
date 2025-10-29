@@ -10,7 +10,7 @@ namespace Kolm_rakendust
         Button btn;
         Label lbl;
         private pildiVaatamise pildiVaataja;
-        private MatemaatilineArarvamisMang mathGame;
+        private MatemaatilineArarvamisMangForm mathGame;
 
         private MathQuiz mathQuiz;
 
@@ -21,7 +21,7 @@ namespace Kolm_rakendust
             mathQuiz = new MathQuiz(this);
             mathQuiz.Hide();
 
-            mathGame = new MatemaatilineArarvamisMang(this);
+            mathGame = new MatemaatilineArarvamisMangForm(this);
             mathGame.Hide();
 
             pildiVaataja = new pildiVaatamise(this);
@@ -88,7 +88,7 @@ namespace Kolm_rakendust
             }
             else if (e.Node.Text == "Sarnaste piltide leidmise mäng")
             {
-                mathGame = new MatemaatilineArarvamisMang(this);
+                mathGame = new MatemaatilineArarvamisMangForm(this);
                 pildiVaataja.Hide();
                 mathQuiz.Hide();
                 
