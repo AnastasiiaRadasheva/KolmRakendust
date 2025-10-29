@@ -56,8 +56,7 @@ namespace Kolm_rakendust
             lbl.Font = new Font("Arial", 24);
             lbl.Size = new Size(400, 30);
             lbl.Location = new Point(150, 0);
-            lbl.MouseHover += Lbl_MouseHover;
-            lbl.MouseLeave += Lbl_MouseLeave;
+
 
 
             tree.Nodes.Add(tn);
@@ -93,19 +92,28 @@ namespace Kolm_rakendust
                 mathQuiz.Hide();
                 
             }
+            else if (e.Node.Text == "Välja")
+            {
+                Application.Exit();
+            }
+            else
+            {
+                pildiVaataja.Hide();
+                mathQuiz.Hide();
+                mathGame.Hide();
+            }
         }
-
-        private void Lbl_MouseLeave(object sender, EventArgs e)
+        private void Mang()
         {
-            lbl.BackColor = Color.Transparent;
-            Form1 Form = new Form1();
-            Form.Show();
-            this.Hide();
+            mathGame = new MatemaatilineArarvamisMangForm(this);
         }
-
-        private void Lbl_MouseHover(object sender, EventArgs e)
+        private void Quiz()
         {
-            lbl.BackColor = Color.FromArgb(200, 10, 20);
+            mathQuiz = new MathQuiz(this);
+        }
+        private void pildiVaatajaa()
+        {
+            pildiVaataja.Show();
         }
     }
 }
