@@ -29,7 +29,7 @@ namespace Kolm_rakendust
         {
             parentControl = parent;
 
-            // --- кнопки ---
+
             startButton = new Button()
             {
                 Text = "Alusta viktoriini",
@@ -222,7 +222,13 @@ namespace Kolm_rakendust
                 return;
             }
 
-            string results = string.Join("\n", allScores.Select((p, i) => $"{i + 1}. {p} punkti"));
+            string results = ""; // создаём пустую строку для результатов
+
+            for (int i = 0; i < allScores.Count; i++)
+            {
+                results += (i + 1) + ". " + allScores[i] + " punkti\n"; // добавляем каждый результат
+            }
+
             MessageBox.Show(results, "Tulemused");
         }
 
