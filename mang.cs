@@ -1,4 +1,4 @@
-﻿using Microsoft.VisualBasic;
+﻿ using Microsoft.VisualBasic;
 using System;
 using System.Drawing;
 using System.IO;
@@ -21,6 +21,8 @@ namespace Kolm_rakendust
         private int matchedPairs, points, timeLeftSeconds;
         private bool gameActive;
         private const string ScoresFile = "scores.txt";
+        private Button addTimeBtn;
+        private bool bonusUsed = false;
 
         public MatemaatilineArarvamisMangForm(Form form)
         {
@@ -54,6 +56,13 @@ namespace Kolm_rakendust
             showScoresBtn.Width = 120;
             showScoresBtn.Click += ShowScoresBtn_Click;
             form.Controls.Add(showScoresBtn);
+            addTimeBtn = new Button();
+            addTimeBtn.Text = "+10 sek";
+            addTimeBtn.Location = new Point(780, 20);
+            addTimeBtn.Width = 80;
+            addTimeBtn.Enabled = false; // кнопка активна только во время игры
+            addTimeBtn.Click += AddTimeBtn_Click;
+            form.Controls.Add(addTimeBtn);
 
             flipTimer = new System.Windows.Forms.Timer();
             flipTimer.Interval = 750;
@@ -78,6 +87,9 @@ namespace Kolm_rakendust
         }
         private void StartLevel(int level)
         {
+            bonusUsed = false;
+            addTimeBtn.Enabled = true;
+
             // Убираем старые карточки
             RemoveOldLabels();
 
@@ -126,9 +138,8 @@ namespace Kolm_rakendust
                 labels[i].Font = new Font("Arial", 24, FontStyle.Bold);
                 labels[i].TextAlign = ContentAlignment.MiddleCenter;
 
-                // Цвет фона в зависимости от уровня (пример дополнительной проверки)
                 if (level == 1) labels[i].BackColor = Color.LightGray;
-                if (level == 2) labels[i].BackColor = Color.LightBlue;
+                if (level == 2) labels[i].BackColor = Color.LightPink;
                 if (level == 3) labels[i].BackColor = Color.LightYellow;
 
                 labels[i].BorderStyle = BorderStyle.FixedSingle;
@@ -136,7 +147,6 @@ namespace Kolm_rakendust
                 labels[i].Click += CardLabel_Click;
                 form.Controls.Add(labels[i]);
 
-                // Расположение карточек
                 x += spacing;
                 if ((i + 1) % cols == 0)
                 {
@@ -145,7 +155,6 @@ namespace Kolm_rakendust
                 }
             }
 
-            // Обновляем таймер
             UpdateTimeLabel();
             gameTimer.Start();
         }
@@ -199,11 +208,22 @@ namespace Kolm_rakendust
                     if (string.IsNullOrEmpty(player)) player = "Tundmatu";
                     try { File.AppendAllLines(ScoresFile, new[] { $"{DateTime.Now:yyyy-MM-dd HH:mm};{player};{points}" }); } catch { }
                     MessageBox.Show("Võit! Punktid: " + points);
+                    addTimeBtn.Enabled = false;
+
                 }
             }
             else flipTimer.Start();
         }
 
+        private void AddTimeBtn_Click(object sender, EventArgs e)
+        {
+            if (bonusUsed || !gameActive) return; // можно использовать только 1 раз
+
+            timeLeftSeconds += 10;
+            bonusUsed = true;
+            addTimeBtn.Enabled = false;
+            UpdateTimeLabel();
+        }
 
         private void FlipTimer_Tick(object sender, EventArgs e)
         {
@@ -223,6 +243,8 @@ namespace Kolm_rakendust
                 gameTimer.Stop();
                 gameActive = false;
                 MessageBox.Show("Aeg on otsas!");
+                addTimeBtn.Enabled = false;
+
             }
         }
 
@@ -268,6 +290,8 @@ namespace Kolm_rakendust
             }
             form.Controls.Remove(showScoresBtn);
             gameActive = false;
+            form.Controls.Remove(addTimeBtn);
+
         }
     }
 }

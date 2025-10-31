@@ -27,6 +27,7 @@ namespace Kolm_rakendust
 
         public MathQuiz(Control parent)
         {
+            parent.BackColor = Color.LightBlue;
             parentControl = parent;
 
 
@@ -137,7 +138,11 @@ namespace Kolm_rakendust
                         break;
                 }
 
-                question = $"{a} {op} {b} =";
+                // 💬 Здесь — добавим случайную замену числа на слово
+                string displayA = MaybeConvertToWord(a);
+                string displayB = MaybeConvertToWord(b);
+
+                question = $"{displayA} {op} {displayB} =";
                 correctAnswers[i] = answer;
 
                 switch (i)
@@ -149,6 +154,38 @@ namespace Kolm_rakendust
                 }
             }
         }
+
+        // Функция: иногда превращает число в слово
+        private string MaybeConvertToWord(int num)
+        {
+
+            if (random.NextDouble() < 0.4 && num <= 10)
+            {
+                return NumberToEstonianWord(num);
+            }
+            return num.ToString();
+        }
+
+        //  Перевод чисел в эстонские слова (можно заменить на английские)
+        private string NumberToEstonianWord(int num)
+        {
+            switch (num)
+            {
+                case 0: return "null";
+                case 1: return "üks";
+                case 2: return "kaks";
+                case 3: return "kolm";
+                case 4: return "neli";
+                case 5: return "viis";
+                case 6: return "kuus";
+                case 7: return "seitse";
+                case 8: return "kaheksa";
+                case 9: return "üheksa";
+                case 10: return "kümme";
+                default: return num.ToString();
+            }
+        }
+
 
         private void StartButton_Click(object sender, EventArgs e)
         {
